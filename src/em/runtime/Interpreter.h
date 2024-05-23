@@ -18,6 +18,8 @@ namespace em::runtime {
 
     void visit(ast::stmts::ExpressionStatement* stmt) override;
 
+    VisitorRetValue visit(ast::exprs::FunctionDeclaration* expr) override;
+
     VisitorRetValue visit(ast::exprs::AssignmentExpression* expr) override;
 
     VisitorRetValue visit(ast::exprs::OperatorExpression* expr) override;

@@ -17,6 +17,8 @@ namespace em {
 
     std::unique_ptr<ast::exprs::Expression> parseExpression();
 
+    std::unique_ptr<ast::exprs::Expression> parseFunctionDeclaration();
+
     std::unique_ptr<ast::exprs::Expression> parseAssignment();
 
     std::unique_ptr<ast::exprs::Expression> parseBelonging();
@@ -31,9 +33,13 @@ namespace em {
 
     [[nodiscard]] Token previous() const;
 
-    bool match(TokenType tokenType);
+    Token consume(TokenType tokenType);
 
-    bool match(std::initializer_list<TokenType> tokenTypes);
+    [[nodiscard]] bool match(TokenType tokenType);
+
+    [[nodiscard]] bool match(std::initializer_list<TokenType> tokenTypes);
+
+    [[nodiscard]] bool matchSequence(std::vector<TokenType> tokenTypes);
 
     [[nodiscard]] bool check(TokenType tokenType) const;
 

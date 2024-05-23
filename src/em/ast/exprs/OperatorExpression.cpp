@@ -1,11 +1,11 @@
 #include "OperatorExpression.h"
 
 namespace em::ast::exprs {
-  OperatorExpression::OperatorExpression(std::unique_ptr<Expression> left, TokenType mOperator,
+  OperatorExpression::OperatorExpression(std::unique_ptr<Expression> left, Token mOperator,
                                          std::unique_ptr<Expression> right)
-      : mLeft(std::move(left)), mOperator(mOperator), mRight(std::move(right)) {}
+      : mLeft(std::move(left)), mOperator(std::move(mOperator)), mRight(std::move(right)) {}
 
-  TokenType OperatorExpression::operation() const {
+  const Token& OperatorExpression::operation() const {
     return mOperator;
   }
 

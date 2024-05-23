@@ -1,6 +1,7 @@
 #include "Interpreter.h"
 
 #include "../ast/exprs/AssignmentExpression.h"
+#include "../ast/exprs/FunctionDeclaration.h"
 #include "../ast/exprs/GroupExpression.h"
 #include "../ast/exprs/LiteralExpression.h"
 #include "../ast/exprs/OperatorExpression.h"
@@ -10,6 +11,7 @@
 #include "../values/LiteralValue.h"
 #include "../values/MaterialSetValue.h"
 #include "../values/VirtualSetValue.h"
+#include "../values/functions/ProgramFunction.h"
 
 namespace em::runtime {
   Interpreter::Interpreter() {
@@ -36,6 +38,12 @@ namespace em::runtime {
     std::cout << "Expr:\t" << res->str() << '\n';
   }
 
+  ast::NodeVisitor::VisitorRetValue Interpreter::visit(ast::exprs::FunctionDeclaration* expr) {
+    auto function = std::make_shared<values::ProgramFunction>(expr->identifier(), expr->expression());
+    mVariables[expr->identifier().text()] = function;
+    return function;
+  }
+
   ast::NodeVisitor::VisitorRetValue Interpreter::visit(ast::exprs::AssignmentExpression* expr) {
     auto value = expr->expression()->accept(*this);
     mVariables[expr->identifier().text()] = value;
@@ -45,7 +53,7 @@ namespace em::runtime {
   Interpreter::VisitorRetValue Interpreter::visit(ast::exprs::OperatorExpression* expr) {
     auto leftValue = expr->leftExpression()->accept(*this);
     auto rightValue = expr->rightExpression()->accept(*this);
-    switch (expr->operation()) {
+    switch (expr->operation().type()) {
       case TokenType::EQUAL:
         return leftValue->isEqualTo(rightValue);
       case TokenType::NOT_EQUAL:
@@ -61,7 +69,7 @@ namespace em::runtime {
       case TokenType::NOT_SUBSET:
         return leftValue->isNotSubsetOf(rightValue);
       default:
-        throw std::logic_error("Operation " + TokenTypeToString(expr->operation()) +
+        throw std::logic_error("Operation " + TokenTypeToString(expr->operation().type()) +
                                " is not supported for a operator expression");
     }
   }

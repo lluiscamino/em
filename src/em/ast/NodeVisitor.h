@@ -10,6 +10,8 @@ namespace em::ast {
   }
 
   namespace exprs {
+    class FunctionDeclaration;
+
     class AssignmentExpression;
 
     class OperatorExpression;
@@ -37,6 +39,8 @@ namespace em::ast {
     virtual void visit(stmts::ExpressionStatement* stmt) = 0;
 
 #pragma mark - Expressions
+    virtual VisitorRetValue visit(exprs::FunctionDeclaration* expr) = 0;
+
     virtual VisitorRetValue visit(exprs::AssignmentExpression* expr) = 0;
 
     virtual VisitorRetValue visit(exprs::OperatorExpression* expr) = 0;

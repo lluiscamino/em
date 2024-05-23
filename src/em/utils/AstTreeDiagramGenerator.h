@@ -1,14 +1,14 @@
 #pragma once
 
 #include <sstream>
+
+#include "../Token.h"
 #include "../ast/NodeVisitor.h"
-#include "../ast/Program.h"
 
 namespace em::utils {
-  class PrintVisitor
-      : public ast::NodeVisitor {  // TODO: Figure out a better name that does not include the word "Visitor"
+  class AstTreeDiagramGenerator : public ast::NodeVisitor {
    public:
-    std::string print(const std::unique_ptr<ast::Program>& program);
+    void generate(const std::unique_ptr<ast::Program>& program, const std::string& filePath);
 
     void visit(ast::Program* program) override;
 
@@ -29,6 +29,14 @@ namespace em::utils {
     VisitorRetValue visit(ast::exprs::VariableExpression* expr) override;
 
    private:
+    unsigned int createNode(const std::string& label);
+
+    unsigned int createTokenNode(const Token& token);
+
+    void linkNodes(const std::vector<unsigned int>& nodeIds, const std::string& label = "");
+
     std::stringstream mStream;
+    unsigned int mLastNodeId{0};
+    unsigned int mNumNodes{0};
   };
 }  // namespace em::utils

@@ -42,4 +42,11 @@ add_executable(sets src/main.cpp
         src/em/ast/stmts/ExpressionStatement.h
         src/em/ast/Program.cpp
         src/em/ast/Program.h
+        src/em/ast/exprs/FunctionDeclaration.cpp
+        src/em/ast/exprs/FunctionDeclaration.h
+        src/em/utils/AstTreeDiagramGenerator.cpp
+        src/em/utils/AstTreeDiagramGenerator.h
+        src/em/values/functions/Function.h
+        src/em/values/functions/ProgramFunction.cpp
+        src/em/values/functions/ProgramFunction.h
 )

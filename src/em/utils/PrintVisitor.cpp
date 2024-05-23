@@ -2,6 +2,7 @@
 
 #include "../ast/Program.h"
 #include "../ast/exprs/AssignmentExpression.h"
+#include "../ast/exprs/FunctionDeclaration.h"
 #include "../ast/exprs/GroupExpression.h"
 #include "../ast/exprs/LiteralExpression.h"
 #include "../ast/exprs/OperatorExpression.h"
@@ -27,6 +28,15 @@ namespace em::utils {
     mStream << '\n';
   }
 
+  ast::NodeVisitor::VisitorRetValue PrintVisitor::visit(ast::exprs::FunctionDeclaration* expr) {
+    mStream << string::wStringToString(expr->identifier().text()) << "(";
+    std::vector<std::string> paramNames;
+    std::transform(expr->parameters().cbegin(), expr->parameters().cend(), std::back_inserter(paramNames),
+                   [](const auto& param) { return string::wStringToString(param.text()); });
+    mStream << string::joinValues(paramNames, ",") << ") = " << expr->expression()->accept(*this);
+    return nullptr;
+  }
+
   ast::NodeVisitor::VisitorRetValue PrintVisitor::visit(ast::exprs::AssignmentExpression* expr) {
     mStream << string::wStringToString(expr->identifier().text()) << " := ";
     expr->expression()->accept(*this);
@@ -35,7 +45,7 @@ namespace em::utils {
 
   ast::NodeVisitor::VisitorRetValue PrintVisitor::visit(ast::exprs::OperatorExpression* expr) {
     expr->leftExpression()->accept(*this);
-    mStream << " " << TokenTypeToString(expr->operation()) << " ";
+    mStream << " " << TokenTypeToString(expr->operation().type()) << " ";
     expr->rightExpression()->accept(*this);
     return nullptr;
   }
