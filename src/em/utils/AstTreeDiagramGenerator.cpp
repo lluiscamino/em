@@ -4,6 +4,7 @@
 #include <vector>
 #include "../ast/Program.h"
 #include "../ast/exprs/AssignmentExpression.h"
+#include "../ast/exprs/FunctionCall.h"
 #include "../ast/exprs/FunctionDeclaration.h"
 #include "../ast/exprs/GroupExpression.h"
 #include "../ast/exprs/LiteralExpression.h"
@@ -35,23 +36,6 @@ namespace em::utils {
     stmt->expression()->accept(*this);
     linkNodes({nodeId, mLastNodeId});
     mLastNodeId = nodeId;
-  }
-
-  ast::NodeVisitor::VisitorRetValue AstTreeDiagramGenerator::visit(ast::exprs::FunctionDeclaration* expr) {
-    auto nodeId = createNode("FunctionDeclaration");
-
-    auto identifierNodeId = createTokenNode(expr->identifier());
-    linkNodes({nodeId, identifierNodeId}, "identifier");
-
-    for (const auto& param : expr->parameters()) {
-      linkNodes({nodeId, createTokenNode(param)}, "param");
-    }
-
-    expr->expression()->accept(*this);
-    linkNodes({nodeId, mLastNodeId}, "expr");
-
-    mLastNodeId = nodeId;
-    return nullptr;
   }
 
   ast::NodeVisitor::VisitorRetValue AstTreeDiagramGenerator::visit(ast::exprs::AssignmentExpression* expr) {
@@ -110,6 +94,35 @@ namespace em::utils {
     mLastNodeId = createNode("VariableExpression");
     auto tokenNodeId = createTokenNode(expr->token());
     linkNodes({mLastNodeId, tokenNodeId});
+    return nullptr;
+  }
+
+  ast::NodeVisitor::VisitorRetValue AstTreeDiagramGenerator::visit(ast::exprs::FunctionDeclaration* expr) {
+    auto nodeId = createNode("FunctionDeclaration");
+
+    auto identifierNodeId = createTokenNode(expr->identifier());
+    linkNodes({nodeId, identifierNodeId}, "identifier");
+
+    for (const auto& param : expr->parameters()) {
+      linkNodes({nodeId, createTokenNode(param)}, "param");
+    }
+
+    expr->expression()->accept(*this);
+    linkNodes({nodeId, mLastNodeId}, "expr");
+
+    mLastNodeId = nodeId;
+    return nullptr;
+  }
+
+  ast::NodeVisitor::VisitorRetValue AstTreeDiagramGenerator::visit(ast::exprs::FunctionCall* expr) {
+    auto nodeId = createNode("FunctionCall");
+    expr->expression()->accept(*this);
+    linkNodes({nodeId, mLastNodeId});
+    for (const auto& value : expr->arguments()) {
+      value->accept(*this);
+      linkNodes({nodeId, mLastNodeId}, "arg");
+    }
+    mLastNodeId = nodeId;
     return nullptr;
   }
 

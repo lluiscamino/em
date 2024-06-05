@@ -4,6 +4,7 @@
 
 #include "ast/Program.h"
 #include "ast/exprs/AssignmentExpression.h"
+#include "ast/exprs/FunctionCall.h"
 #include "ast/exprs/FunctionDeclaration.h"
 #include "ast/exprs/GroupExpression.h"
 #include "ast/exprs/LiteralExpression.h"
@@ -33,29 +34,13 @@ namespace em {
   }
 
   std::unique_ptr<ast::exprs::Expression> Parser::parseExpression() {
-    return parseFunctionDeclaration();
-  }
-
-  std::unique_ptr<ast::exprs::Expression> Parser::parseFunctionDeclaration() {
-    if (matchSequence({TokenType::IDENTIFIER, TokenType::LEFT_PAREN})) {
-      auto identifier = mTokens[mPosition - 2];
-      std::vector<Token> params;
-      if (!check(TokenType::RIGHT_PAREN)) {
-        do {
-          params.emplace_back(consume(TokenType::IDENTIFIER));
-        } while (match(TokenType::COMMA));
-      }
-      consume(TokenType::RIGHT_PAREN);
-      consume(TokenType::EQUAL);
-      return std::make_unique<ast::exprs::FunctionDeclaration>(identifier, params, parseFunctionDeclaration());
-    }
     return parseAssignment();
   }
 
   std::unique_ptr<ast::exprs::Expression> Parser::parseAssignment() {
     auto left = parseBelonging();
     while (match(TokenType::ASSIGN)) {
-      auto right = parseFunctionDeclaration();
+      auto right = parseExpression();
       if (auto* variableExpr = dynamic_cast<ast::exprs::VariableExpression*>(left.get())) {
         left = std::make_unique<ast::exprs::AssignmentExpression>(variableExpr->token(), std::move(right));
       } else {
@@ -100,7 +85,58 @@ namespace em {
       mPosition++;
       return std::make_unique<ast::exprs::SetExpression>(std::move(exprs));
     }
-    return parsePrimary();
+    return parseFunctionDeclaration();
+  }
+
+  std::unique_ptr<ast::exprs::Expression> Parser::parseFunctionDeclaration() {
+    auto positionBackup = mPosition;
+    if (matchSequence({TokenType::IDENTIFIER, TokenType::LEFT_PAREN})) {
+      auto identifier = mTokens[mPosition - 2];
+      std::vector<Token> params;
+      if (!check(TokenType::RIGHT_PAREN)) {
+        do {
+          if (check(TokenType::IDENTIFIER)) {
+            params.emplace_back(consume(TokenType::IDENTIFIER));
+          } else {
+            mPosition = positionBackup;
+            return parseFunctionCall();
+          }
+        } while (match(TokenType::COMMA));
+      }
+      consume(TokenType::RIGHT_PAREN);
+      if (check(TokenType::EQUAL)) {
+        consume(TokenType::EQUAL);
+      } else {
+        mPosition = positionBackup;
+        return parseFunctionCall();
+      }
+      return std::make_unique<ast::exprs::FunctionDeclaration>(identifier, params, parseExpression());
+    }
+    return parseFunctionCall();
+  }
+
+  std::unique_ptr<ast::exprs::Expression> Parser::parseFunctionCall() {
+    auto expr = parsePrimary();
+    while (true) {
+      if (match(TokenType::LEFT_PAREN)) {
+        expr = finishFunctionCall(std::move(expr));
+      } else {
+        break;
+      }
+    }
+    return expr;
+  }
+
+  std::unique_ptr<ast::exprs::Expression> Parser::finishFunctionCall(
+      std::unique_ptr<ast::exprs::Expression> expression) {
+    std::vector<std::unique_ptr<ast::exprs::Expression>> args;
+    if (!check(TokenType::RIGHT_PAREN)) {
+      do {
+        args.emplace_back(parseExpression());
+      } while (match(TokenType::COMMA));
+    }
+    consume(TokenType::RIGHT_PAREN);
+    return std::make_unique<ast::exprs::FunctionCall>(std::move(expression), std::move(args));
   }
 
   std::unique_ptr<ast::exprs::Expression> Parser::parsePrimary() {
@@ -116,7 +152,7 @@ namespace em {
       consume(TokenType::RIGHT_PAREN);
       return std::make_unique<ast::exprs::GroupExpression>(std::move(expr));
     }
-    return nullptr;
+    throw std::logic_error("Unrecognized syntax node");
   }
 
   Token Parser::previous() const {

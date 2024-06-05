@@ -1,16 +1,12 @@
 #pragma once
-#include "../../Token.h"
 #include "Function.h"
 
-namespace em::ast::exprs {
-  class Expression;
-}
-
 namespace em::values::functions {
-  class ProgramFunction : public Function {
+  using ImplementationFunction = std::function<std::shared_ptr<Value>(const std::vector<std::shared_ptr<Value>>&)>;
+
+  class NativeFunction : public Function {
    public:
-    ProgramFunction(Token identifier, std::vector<Token> parameters,
-                    std::shared_ptr<ast::exprs::Expression> expression);
+    explicit NativeFunction(std::wstring identifier, ImplementationFunction implementation);
 
     bool operator==(const Value& other) override;
 
@@ -24,9 +20,8 @@ namespace em::values::functions {
         runtime::Interpreter& interpreter, const std::vector<std::shared_ptr<Value>>& arguments) override;
 
    private:
-    Token mIdentifier;
-    std::vector<Token> mParameters;
-    std::shared_ptr<ast::exprs::Expression> mExpression;
+    std::wstring mIdentifier;
+    ImplementationFunction mImplementation;
   };
 
 }  // namespace em::values::functions

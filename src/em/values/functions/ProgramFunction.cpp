@@ -3,9 +3,10 @@
 #include "../../ast/exprs/FunctionDeclaration.h"
 #include "../../utils/StringUtils.h"
 
-namespace em::values {
-  ProgramFunction::ProgramFunction(Token identifier, std::shared_ptr<ast::exprs::Expression> expression)
-      : mIdentifier(std::move(identifier)), mExpression(std::move(expression)) {}
+namespace em::values::functions {
+  ProgramFunction::ProgramFunction(Token identifier, std::vector<Token> parameters,
+                                   std::shared_ptr<ast::exprs::Expression> expression)
+      : mIdentifier(std::move(identifier)), mParameters(std::move(parameters)), mExpression(std::move(expression)) {}
 
   bool ProgramFunction::operator==(const Value& other) {
     return this == &other;
@@ -15,39 +16,19 @@ namespace em::values {
     return !(*this == other);
   }
 
-  ProgramFunction::operator bool() const {
-    return false;
-  }
-
   size_t ProgramFunction::hash() const {
     return std::hash<std::wstring>()(mIdentifier.text());
-  }
-
-  std::unique_ptr<Value> ProgramFunction::isSubsetOf(const std::shared_ptr<Value>& other) const {
-    throw std::logic_error("ProgramFunction::isSubsetOf: not supported");
-  }
-
-  std::unique_ptr<Value> ProgramFunction::hasElement(const std::shared_ptr<Value>& other) const {
-    throw std::logic_error("ProgramFunction::hasElement: not supported");
-  }
-
-  std::unique_ptr<Value> ProgramFunction::negation() const {
-    throw std::logic_error("ProgramFunction::negation: not supported");
-  }
-
-  std::unique_ptr<Value> ProgramFunction::unionOp(const std::shared_ptr<Value>& other) const {
-    throw std::logic_error("ProgramFunction::unionOp: not supported");
-  }
-
-  std::unique_ptr<Value> ProgramFunction::intersection(const std::shared_ptr<Value>& other) const {
-    throw std::logic_error("ProgramFunction::intersection: not supported");
   }
 
   std::string ProgramFunction::str() const {
     return "ProgramFunction<" + utils::string::wStringToString(mIdentifier.text()) + ">";
   }
 
-  ast::NodeVisitor::VisitorRetValue ProgramFunction::execute(runtime::Interpreter& interpreter) {
+  ast::NodeVisitor::VisitorRetValue ProgramFunction::execute(runtime::Interpreter& interpreter,
+                                                             const std::vector<std::shared_ptr<Value>>& arguments) {
+    for (size_t i = 0; i < std::min(arguments.size(), mParameters.size()); i++) {  // TODO: Create variables environment
+      interpreter.addVariable(mParameters[i], arguments[i]);
+    }
     return mExpression->accept(interpreter);
   }
-}  // namespace em::values
+}  // namespace em::values::functions

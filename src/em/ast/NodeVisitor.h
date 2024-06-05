@@ -10,8 +10,6 @@ namespace em::ast {
   }
 
   namespace exprs {
-    class FunctionDeclaration;
-
     class AssignmentExpression;
 
     class OperatorExpression;
@@ -23,6 +21,10 @@ namespace em::ast {
     class GroupExpression;
 
     class VariableExpression;
+
+    class FunctionDeclaration;
+
+    class FunctionCall;
   }  // namespace exprs
 
   class NodeVisitor {
@@ -33,14 +35,12 @@ namespace em::ast {
     virtual ~NodeVisitor() = default;
 
 #pragma mark - Program
-    virtual void visit(Program* program) = 0;  // TODO: return value should be void
+    virtual void visit(Program* program) = 0;
 
 #pragma mark - Statements
     virtual void visit(stmts::ExpressionStatement* stmt) = 0;
 
 #pragma mark - Expressions
-    virtual VisitorRetValue visit(exprs::FunctionDeclaration* expr) = 0;
-
     virtual VisitorRetValue visit(exprs::AssignmentExpression* expr) = 0;
 
     virtual VisitorRetValue visit(exprs::OperatorExpression* expr) = 0;
@@ -52,5 +52,9 @@ namespace em::ast {
     virtual VisitorRetValue visit(exprs::GroupExpression* expr) = 0;
 
     virtual VisitorRetValue visit(exprs::VariableExpression* expr) = 0;
+
+    virtual VisitorRetValue visit(exprs::FunctionDeclaration* expr) = 0;
+
+    virtual VisitorRetValue visit(exprs::FunctionCall* expr) = 0;
   };
 }  // namespace em::ast

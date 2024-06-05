@@ -1,6 +1,7 @@
 #include "Interpreter.h"
 
 #include "../ast/exprs/AssignmentExpression.h"
+#include "../ast/exprs/FunctionCall.h"
 #include "../ast/exprs/FunctionDeclaration.h"
 #include "../ast/exprs/GroupExpression.h"
 #include "../ast/exprs/LiteralExpression.h"
@@ -8,23 +9,32 @@
 #include "../ast/exprs/SetExpression.h"
 #include "../ast/exprs/VariableExpression.h"
 #include "../ast/stmts/ExpressionStatement.h"
+#include "../utils/StringUtils.h"
 #include "../values/LiteralValue.h"
 #include "../values/MaterialSetValue.h"
 #include "../values/VirtualSetValue.h"
+#include "../values/functions/NativeFunction.h"
 #include "../values/functions/ProgramFunction.h"
 
 namespace em::runtime {
   Interpreter::Interpreter() {
-    mVariables = {
-        {L"ℝ", std::make_unique<values::VirtualSetValue>(std::make_unique<ast::exprs::LiteralExpression>(
-                   std::make_unique<values::LiteralValue<bool>>(true)))},
-        {L"∅", std::make_unique<values::VirtualSetValue>(std::make_unique<ast::exprs::LiteralExpression>(
-                   std::make_unique<values::LiteralValue<bool>>(false)))},
-    };
+    mVariables = {{L"ℝ", std::make_unique<values::VirtualSetValue>(std::make_unique<ast::exprs::LiteralExpression>(
+                             std::make_unique<values::LiteralValue<bool>>(true)))},
+                  {L"∅", std::make_unique<values::VirtualSetValue>(std::make_unique<ast::exprs::LiteralExpression>(
+                             std::make_unique<values::LiteralValue<bool>>(false)))},
+                  {L"print", std::make_unique<values::functions::NativeFunction>(
+                                 L"print", [](const std::vector<std::shared_ptr<values::Value>>& args) {
+                                   std::cout << args[0]->str() << '\n';
+                                   return std::make_shared<values::LiteralValue<int>>(0);
+                                 })}};
   }
 
   void Interpreter::execute(const std::unique_ptr<ast::Program>& program) {
     program->accept(*this);
+  }
+
+  void Interpreter::addVariable(Token token, const VisitorRetValue& value) {
+    mVariables[token.text()] = value;
   }
 
   void Interpreter::visit(ast::Program* program) {
@@ -35,18 +45,18 @@ namespace em::runtime {
 
   void Interpreter::visit(ast::stmts::ExpressionStatement* stmt) {
     auto res = stmt->expression()->accept(*this);
-    std::cout << "Expr:\t" << res->str() << '\n';
   }
 
   ast::NodeVisitor::VisitorRetValue Interpreter::visit(ast::exprs::FunctionDeclaration* expr) {
-    auto function = std::make_shared<values::ProgramFunction>(expr->identifier(), expr->expression());
-    mVariables[expr->identifier().text()] = function;
+    auto function = std::make_shared<values::functions::ProgramFunction>(expr->identifier(), expr->parameters(),
+                                                                         expr->expression());
+    addVariable(expr->identifier(), function);
     return function;
   }
 
   ast::NodeVisitor::VisitorRetValue Interpreter::visit(ast::exprs::AssignmentExpression* expr) {
     auto value = expr->expression()->accept(*this);
-    mVariables[expr->identifier().text()] = value;
+    addVariable(expr->identifier(), value);
     return value;
   }
 
@@ -90,7 +100,25 @@ namespace em::runtime {
   }
 
   ast::NodeVisitor::VisitorRetValue Interpreter::visit(ast::exprs::VariableExpression* expr) {
-    return mVariables[expr->token().text()];
+    const auto& text = expr->token().text();
+    auto it = mVariables.find(text);
+    if (it != mVariables.cend()) {
+      return it->second;
+    }
+    throw std::logic_error("Undefined identifier '" + utils::string::wStringToString(text) + "'");
+  }
+
+  ast::NodeVisitor::VisitorRetValue Interpreter::visit(ast::exprs::FunctionCall* expr) {
+    auto function = expr->expression()->accept(*this);
+    if (auto* functionValue = dynamic_cast<values::functions::Function*>(function.get())) {
+      std::vector<VisitorRetValue> args;
+      args.reserve(expr->arguments().size());
+      std::transform(expr->arguments().cbegin(), expr->arguments().cend(), std::back_inserter(args),
+                     [this](const auto& argExpr) { return argExpr->accept(*this); });
+      return functionValue->execute(*this, args);
+    } else {
+      throw std::logic_error("Invalid function call target '" + function->str() + "'");
+    }
   }
 
 }  // namespace em::runtime

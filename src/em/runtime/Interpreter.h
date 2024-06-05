@@ -4,6 +4,7 @@
 #include <string>
 #include <unordered_map>
 
+#include "../Token.h"
 #include "../ast/NodeVisitor.h"
 #include "../ast/Program.h"
 
@@ -13,6 +14,8 @@ namespace em::runtime {
     Interpreter();
 
     void execute(const std::unique_ptr<ast::Program>& program);
+
+    void addVariable(Token token, const VisitorRetValue& value);
 
     void visit(ast::Program* program) override;
 
@@ -31,6 +34,8 @@ namespace em::runtime {
     VisitorRetValue visit(ast::exprs::GroupExpression* expr) override;
 
     VisitorRetValue visit(ast::exprs::VariableExpression* expr) override;
+
+    VisitorRetValue visit(ast::exprs::FunctionCall* expr) override;
 
    private:
     std::unordered_map<std::wstring, VisitorRetValue> mVariables;

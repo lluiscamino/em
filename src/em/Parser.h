@@ -29,6 +29,10 @@ namespace em {
 
     std::unique_ptr<ast::exprs::Expression> parseSet();
 
+    std::unique_ptr<ast::exprs::Expression> parseFunctionCall();
+
+    std::unique_ptr<ast::exprs::Expression> finishFunctionCall(std::unique_ptr<ast::exprs::Expression> expression);
+
     std::unique_ptr<ast::exprs::Expression> parsePrimary();
 
     [[nodiscard]] Token previous() const;

@@ -28,6 +28,8 @@ namespace em::utils {
 
     VisitorRetValue visit(ast::exprs::VariableExpression* expr) override;
 
+    VisitorRetValue visit(ast::exprs::FunctionCall* expr) override;
+
    private:
     unsigned int createNode(const std::string& label);
 

@@ -15,8 +15,6 @@ add_executable(sets src/main.cpp
         src/em/ast/exprs/LiteralExpression.cpp
         src/em/ast/exprs/LiteralExpression.h
         src/em/ast/NodeVisitor.h
-        src/em/utils/PrintVisitor.cpp
-        src/em/utils/PrintVisitor.h
         src/em/ast/exprs/OperatorExpression.cpp
         src/em/ast/exprs/OperatorExpression.h
         src/em/ast/exprs/SetExpression.cpp
@@ -49,4 +47,9 @@ add_executable(sets src/main.cpp
         src/em/values/functions/Function.h
         src/em/values/functions/ProgramFunction.cpp
         src/em/values/functions/ProgramFunction.h
+        src/em/ast/exprs/FunctionCall.cpp
+        src/em/ast/exprs/FunctionCall.h
+        src/em/values/functions/NativeFunction.cpp
+        src/em/values/functions/NativeFunction.h
+        src/em/values/functions/Function.cpp
 )
