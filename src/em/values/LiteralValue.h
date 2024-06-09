@@ -3,8 +3,8 @@
 #include <string>
 #include <typeinfo>
 
-#include "MaterialSetValue.h"
 #include "Value.h"
+#include "sets/MaterialSetValue.h"
 
 namespace em::values {
   template <class T>

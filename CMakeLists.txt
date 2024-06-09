@@ -22,8 +22,8 @@ add_executable(sets src/main.cpp
         src/em/runtime/Interpreter.cpp
         src/em/runtime/Interpreter.h
         src/em/values/LiteralValue.h
-        src/em/values/MaterialSetValue.cpp
-        src/em/values/MaterialSetValue.h
+        src/em/values/sets/MaterialSetValue.cpp
+        src/em/values/sets/MaterialSetValue.h
         src/em/ast/exprs/GroupExpression.cpp
         src/em/ast/exprs/GroupExpression.h
         src/em/values/Value.cpp
@@ -32,8 +32,8 @@ add_executable(sets src/main.cpp
         src/em/ast/exprs/VariableExpression.cpp
         src/em/ast/exprs/VariableExpression.h
         src/em/utils/StringUtils.h
-        src/em/values/VirtualSetValue.cpp
-        src/em/values/VirtualSetValue.h
+        src/em/values/sets/VirtualSetValue.cpp
+        src/em/values/sets/VirtualSetValue.h
         src/em/ast/Node.h
         src/em/ast/stmts/Statement.h
         src/em/ast/stmts/ExpressionStatement.cpp
@@ -52,4 +52,6 @@ add_executable(sets src/main.cpp
         src/em/values/functions/NativeFunction.cpp
         src/em/values/functions/NativeFunction.h
         src/em/values/functions/Function.cpp
+        src/em/values/sets/Set.cpp
+        src/em/values/sets/Set.h
 )

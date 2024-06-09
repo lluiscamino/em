@@ -2,7 +2,7 @@
 #include <memory>
 
 namespace em::values {
-  class Value {
+  class Value : public std::enable_shared_from_this<Value> {
    public:
     virtual ~Value() = default;
 

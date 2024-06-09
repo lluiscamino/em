@@ -2,9 +2,11 @@
 
 #include <iostream>
 #include <unordered_set>
-#include "Value.h"
 
-namespace em::values {
+#include "../Value.h"
+#include "Set.h"
+
+namespace em::values::sets {
   struct ValuePtrHash {
     constexpr std::size_t operator()(const std::shared_ptr<Value>& value) const { return value->hash(); }
   };
@@ -17,17 +19,13 @@ namespace em::values {
 
   using ValuesSet = std::unordered_set<std::shared_ptr<Value>, ValuePtrHash, ValuePtrEq>;
 
-  class MaterialSetValue : public Value {
+  class MaterialSetValue : public Set {
    public:
     MaterialSetValue() = default;
 
     explicit MaterialSetValue(ValuesSet values);
 
     bool operator==(const Value& other) override;
-
-    bool operator!=(const Value& other) override;
-
-    explicit operator bool() const override;
 
     [[nodiscard]] size_t hash() const override { return std::hash<ValuesSet::size_type>()(mValues.size()); }
 
@@ -39,15 +37,9 @@ namespace em::values {
 
     [[nodiscard]] std::unique_ptr<Value> hasElement(const std::shared_ptr<Value>& other) const override;
 
-    [[nodiscard]] std::unique_ptr<Value> negation() const override;
-
-    [[nodiscard]] std::unique_ptr<Value> unionOp(const std::shared_ptr<Value>& other) const override;
-
-    [[nodiscard]] std::unique_ptr<Value> intersection(const std::shared_ptr<Value>& other) const override;
-
     [[nodiscard]] std::string str() const override;
 
    private:
     ValuesSet mValues{};
   };
-}  // namespace em::values
+}  // namespace em::values::sets

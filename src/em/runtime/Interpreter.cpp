@@ -11,29 +11,34 @@
 #include "../ast/stmts/ExpressionStatement.h"
 #include "../utils/StringUtils.h"
 #include "../values/LiteralValue.h"
-#include "../values/MaterialSetValue.h"
-#include "../values/VirtualSetValue.h"
 #include "../values/functions/NativeFunction.h"
 #include "../values/functions/ProgramFunction.h"
+#include "../values/sets/MaterialSetValue.h"
+#include "../values/sets/VirtualSetValue.h"
 
 namespace em::runtime {
   Interpreter::Interpreter() {
-    mVariables = {{L"ℝ", std::make_unique<values::VirtualSetValue>(std::make_unique<ast::exprs::LiteralExpression>(
-                             std::make_unique<values::LiteralValue<bool>>(true)))},
-                  {L"∅", std::make_unique<values::VirtualSetValue>(std::make_unique<ast::exprs::LiteralExpression>(
-                             std::make_unique<values::LiteralValue<bool>>(false)))},
-                  {L"print", std::make_unique<values::functions::NativeFunction>(
-                                 L"print", [](const std::vector<std::shared_ptr<values::Value>>& args) {
-                                   std::cout << args[0]->str() << '\n';
-                                   return std::make_shared<values::LiteralValue<int>>(0);
-                                 })}};
+    mVariables = {
+        {L"ℝ", std::make_unique<values::sets::VirtualSetValue>(std::make_unique<values::functions::NativeFunction>(
+                   L"ℝ",
+                   [](const auto&) {
+                     // TODO: Only return true if it's a number
+                     return std::make_unique<values::LiteralValue<bool>>(true);
+                   }))},
+        {L"∅", std::make_unique<values::sets::VirtualSetValue>(std::make_unique<values::functions::NativeFunction>(
+                   L"∅", [](const auto&) { return std::make_unique<values::LiteralValue<bool>>(false); }))},
+        {L"print", std::make_unique<values::functions::NativeFunction>(
+                       L"print", [](const std::vector<std::shared_ptr<values::Value>>& args) {
+                         std::cout << args[0]->str() << '\n';
+                         return std::make_unique<values::LiteralValue<int>>(0);
+                       })}};
   }
 
   void Interpreter::execute(const std::unique_ptr<ast::Program>& program) {
     program->accept(*this);
   }
 
-  void Interpreter::addVariable(Token token, const VisitorRetValue& value) {
+  void Interpreter::addVariable(const Token& token, const VisitorRetValue& value) {
     mVariables[token.text()] = value;
   }
 
@@ -63,6 +68,7 @@ namespace em::runtime {
   Interpreter::VisitorRetValue Interpreter::visit(ast::exprs::OperatorExpression* expr) {
     auto leftValue = expr->leftExpression()->accept(*this);
     auto rightValue = expr->rightExpression()->accept(*this);
+    // todo: study type checking here: require(Set)
     switch (expr->operation().type()) {
       case TokenType::EQUAL:
         return leftValue->isEqualTo(rightValue);
@@ -85,7 +91,7 @@ namespace em::runtime {
   }
 
   Interpreter::VisitorRetValue Interpreter::visit(ast::exprs::SetExpression* expr) {
-    auto setValue = std::make_unique<values::MaterialSetValue>();
+    auto setValue = std::make_unique<values::sets::MaterialSetValue>();
     std::for_each(expr->values().cbegin(), expr->values().cend(),
                   [&](const auto& subExpr) { setValue->addValue(subExpr->accept(*this)); });
     return setValue;

@@ -15,7 +15,7 @@ namespace em::runtime {
 
     void execute(const std::unique_ptr<ast::Program>& program);
 
-    void addVariable(Token token, const VisitorRetValue& value);
+    void addVariable(const Token& token, const VisitorRetValue& value);
 
     void visit(ast::Program* program) override;
 

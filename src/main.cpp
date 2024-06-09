@@ -9,13 +9,7 @@
 #include "em/utils/AstTreeDiagramGenerator.h"
 
 void executeProgram() {
-  std::wstring source =
-      L"generator(x) = f(x) = print(x)\n"
-      "set := {fun1(x) = x, fun2(x) = x}\n"
-      "a:= fun1 ∈ set\n"
-      "gf := generator(3)\n"
-      "print(gf)\n"
-      "gf(ℝ)\n";
+  std::wstring source = L"a := {3} ∪ {4}\nb:={3} ∪ {4}\nc:=a∪a\nprint(c)";
 
   auto lexer = em::Lexer(source);
   auto tokens = lexer.scanTokens();

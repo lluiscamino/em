@@ -21,16 +21,7 @@ namespace em::values {
   }
 
   std::unique_ptr<Value> Value::isElementOf(const std::shared_ptr<Value>& other) {
-    if (auto* otherSetValue = dynamic_cast<MaterialSetValue*>(other.get())) {
-      for (const auto& value : otherSetValue->values()) {
-        if (*this == *value) {
-          return std::make_unique<LiteralValue<bool>>(true);
-        }
-      }
-      return std::make_unique<LiteralValue<bool>>(false);
-    }
-    throw std::invalid_argument(std::string("Value::isElementOf: other value (") + other->str() +
-                                ") must be an instance of SetValue");
+    return other->hasElement(shared_from_this());
   }
 
 }  // namespace em::values
