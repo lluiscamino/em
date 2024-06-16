@@ -17,7 +17,7 @@
 #include "../values/sets/VirtualSetValue.h"
 
 namespace em::runtime {
-  Interpreter::Interpreter() {
+  Interpreter::Interpreter(std::shared_ptr<std::ostream> outputStream) : mOutputStream(std::move(outputStream)) {
     mVariables = {
         {L"ℝ", std::make_unique<values::sets::VirtualSetValue>(std::make_unique<values::functions::NativeFunction>(
                    L"ℝ",
@@ -28,8 +28,8 @@ namespace em::runtime {
         {L"∅", std::make_unique<values::sets::VirtualSetValue>(std::make_unique<values::functions::NativeFunction>(
                    L"∅", [](const auto&) { return std::make_unique<values::LiteralValue<bool>>(false); }))},
         {L"print", std::make_unique<values::functions::NativeFunction>(
-                       L"print", [](const std::vector<std::shared_ptr<values::Value>>& args) {
-                         std::cout << args[0]->str() << '\n';
+                       L"print", [this](const std::vector<std::shared_ptr<values::Value>>& args) {
+                         *mOutputStream << args[0]->str() << '\n';
                          return std::make_unique<values::LiteralValue<int>>(0);
                        })}};
   }

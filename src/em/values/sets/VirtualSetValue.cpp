@@ -25,7 +25,7 @@ namespace em::values::sets {
   }
 
   std::unique_ptr<Value> VirtualSetValue::hasElement(const std::shared_ptr<Value>& other) const {
-    runtime::Interpreter interpreter;
+    runtime::Interpreter interpreter(nullptr);  // TODO: Pass a valid output stream
     return std::make_unique<LiteralValue<bool>>(mFunction->execute(interpreter, {other})->isTruthy());
   }
 

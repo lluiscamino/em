@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iostream>
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -11,7 +12,7 @@
 namespace em::runtime {
   class Interpreter : public ast::NodeVisitor {
    public:
-    Interpreter();
+    explicit Interpreter(std::shared_ptr<std::ostream> outputStream);
 
     void execute(const std::unique_ptr<ast::Program>& program);
 
@@ -39,5 +40,6 @@ namespace em::runtime {
 
    private:
     std::unordered_map<std::wstring, VisitorRetValue> mVariables;
+    std::shared_ptr<std::ostream> mOutputStream;
   };
 }  // namespace em::runtime

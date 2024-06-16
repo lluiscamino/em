@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.28)
-project(src/em)
+project(em)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(sets src/main.cpp
+add_library(Em
         src/em/Lexer.cpp
         src/em/Lexer.h
         src/em/Token.cpp
@@ -54,4 +54,17 @@ add_executable(sets src/main.cpp
         src/em/values/functions/Function.cpp
         src/em/values/sets/Set.cpp
         src/em/values/sets/Set.h
+        src/em/EmLang.cpp
+        src/em/EmLang.h
+        src/em/utils/FileUtils.h
 )
+
+add_executable(main src/main.cpp)
+target_link_libraries(main Em)
+
+add_executable(test
+        test/snapshot/EmLang/main.cpp
+        test/utils/TestUtils.h
+        test/snapshot/EmLang/main.cpp
+)
+target_link_libraries(test Em)
