@@ -3,6 +3,7 @@
 
 #include "MaterialSetValue.h"
 
+#include "../../utils/StringUtils.h"
 #include "../LiteralValue.h"
 #include "VirtualSetValue.h"
 
@@ -43,16 +44,11 @@ namespace em::values::sets {
   }
 
   std::string MaterialSetValue::str() const {
-    std::stringstream stream;
-    auto valuesSize = mValues.size();
-    stream << "{";
-    std::for_each(mValues.begin(), mValues.end(), [&stream, valuesSize, idx = 0](const auto& value) mutable {
-      stream << value->str();
-      if (idx++ < valuesSize - 1) {
-        stream << ", ";
-      }
-    });
-    stream << "}";
-    return stream.str();
+    std::vector<std::string> valueStrs;
+    valueStrs.reserve(mValues.size());
+    std::transform(mValues.cbegin(), mValues.cend(), std::back_inserter(valueStrs),
+                   [](const auto& value) { return value->str(); });
+    std::sort(valueStrs.begin(), valueStrs.end());
+    return "{" + utils::string::joinValues(valueStrs, ", ") + "}";
   }
 }  // namespace em::values::sets
