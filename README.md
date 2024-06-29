@@ -53,3 +53,18 @@ set ⊆ ℝ
 |------------------|-------|--------------------|
 | Empty set        | `∅`   | `{}`               |
 | Real numbers set | `ℝ`   | `{x \| -∞ < x <∞}` |
+
+## Functions
+
+### Operations
+
+| Operation       | Syntax                      | Return value | Supported |
+|-----------------|-----------------------------|--------------|-----------|
+| Create function | `h(x, y) = {x, y} ∪ {0, 9}` | Function     | ✅         |
+| Call function   | `h(2, {4})`                 | Any          | ✅         |
+
+### Symbols
+
+| Symbol                  | Token   | Return value | Side effects          |
+|-------------------------|---------|--------------|-----------------------|
+| Print to standard input | `print` | Number       | Prints provided value |
