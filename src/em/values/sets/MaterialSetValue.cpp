@@ -13,7 +13,9 @@ namespace em::values::sets {
   bool MaterialSetValue::operator==(const Value& other) {
     try {
       auto& otherSetValue = dynamic_cast<const MaterialSetValue&>(other);
-      return mValues == otherSetValue.mValues;
+      return mValues.size() == otherSetValue.mValues.size() &&
+             std::all_of(mValues.cbegin(), mValues.cend(),
+                         [&otherSetValue](const auto& value) { return otherSetValue.hasElement(value)->isTruthy(); });
     } catch (const std::bad_cast&) {
       return false;
     }
