@@ -20,6 +20,16 @@ namespace em::values::sets {
 
   std::unique_ptr<Value> Set::unionOp(const std::shared_ptr<Value>& other) const {
     using namespace utils::string;
+    if (auto *thisMaterialSet = dynamic_cast<const MaterialSetValue*>(this),
+        *otherMaterialSet = dynamic_cast<const MaterialSetValue*>(other.get());
+        thisMaterialSet && otherMaterialSet) {
+      auto result = std::make_unique<MaterialSetValue>();
+      std::for_each(thisMaterialSet->values().cbegin(), thisMaterialSet->values().cend(),
+                    [&](const auto& value) { result->addValue(value); });
+      std::for_each(otherMaterialSet->values().cbegin(), otherMaterialSet->values().cend(),
+                    [&](const auto& value) { result->addValue(value); });
+      return result;
+    }
     return std::make_unique<VirtualSetValue>(std::make_unique<functions::NativeFunction>(
         stringToWstring(str()) + L" ∪ " + stringToWstring(other->str()),
         [self = shared_from_this(), other](const auto& args) {
