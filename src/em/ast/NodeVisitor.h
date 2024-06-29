@@ -14,7 +14,9 @@ namespace em::ast {
 
     class OperatorExpression;
 
-    class SetExpression;
+    class MaterialSetExpression;
+
+    class VirtualSetExpression;
 
     class LiteralExpression;
 
@@ -45,7 +47,9 @@ namespace em::ast {
 
     virtual VisitorRetValue visit(exprs::OperatorExpression* expr) = 0;
 
-    virtual VisitorRetValue visit(exprs::SetExpression* expr) = 0;
+    virtual VisitorRetValue visit(exprs::MaterialSetExpression* expr) = 0;
+
+    virtual VisitorRetValue visit(exprs::VirtualSetExpression* expr) = 0;
 
     virtual VisitorRetValue visit(exprs::LiteralExpression* expr) = 0;
 

@@ -5,9 +5,10 @@
 #include "../ast/exprs/FunctionDeclaration.h"
 #include "../ast/exprs/GroupExpression.h"
 #include "../ast/exprs/LiteralExpression.h"
+#include "../ast/exprs/MaterialSetExpression.h"
 #include "../ast/exprs/OperatorExpression.h"
-#include "../ast/exprs/SetExpression.h"
 #include "../ast/exprs/VariableExpression.h"
+#include "../ast/exprs/VirtualSetExpression.h"
 #include "../ast/stmts/ExpressionStatement.h"
 #include "../utils/StringUtils.h"
 #include "../values/LiteralValue.h"
@@ -89,11 +90,17 @@ namespace em::runtime {
     }
   }
 
-  Interpreter::VisitorRetValue Interpreter::visit(ast::exprs::SetExpression* expr) {
+  Interpreter::VisitorRetValue Interpreter::visit(ast::exprs::MaterialSetExpression* expr) {
     auto setValue = std::make_unique<values::sets::MaterialSetValue>();
     std::for_each(expr->values().cbegin(), expr->values().cend(),
                   [&](const auto& subExpr) { setValue->addValue(subExpr->accept(*this)); });
     return setValue;
+  }
+
+  ast::NodeVisitor::VisitorRetValue Interpreter::visit(ast::exprs::VirtualSetExpression* expr) {
+    auto function = std::make_unique<values::functions::ProgramFunction>(
+        Token(TokenType::IDENTIFIER, L""), std::vector{expr->parameter()}, expr->expression());
+    return std::make_unique<values::sets::VirtualSetValue>(std::move(function));
   }
 
   Interpreter::VisitorRetValue Interpreter::visit(ast::exprs::LiteralExpression* expr) {

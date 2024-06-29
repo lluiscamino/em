@@ -28,7 +28,9 @@ namespace em::runtime {
 
     VisitorRetValue visit(ast::exprs::OperatorExpression* expr) override;
 
-    VisitorRetValue visit(ast::exprs::SetExpression* expr) override;
+    VisitorRetValue visit(ast::exprs::MaterialSetExpression* expr) override;
+
+    VisitorRetValue visit(ast::exprs::VirtualSetExpression* expr) override;
 
     VisitorRetValue visit(ast::exprs::LiteralExpression* expr) override;
 

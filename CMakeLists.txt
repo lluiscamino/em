@@ -17,8 +17,8 @@ add_library(Em
         src/em/ast/NodeVisitor.h
         src/em/ast/exprs/OperatorExpression.cpp
         src/em/ast/exprs/OperatorExpression.h
-        src/em/ast/exprs/SetExpression.cpp
-        src/em/ast/exprs/SetExpression.h
+        src/em/ast/exprs/MaterialSetExpression.cpp
+        src/em/ast/exprs/MaterialSetExpression.h
         src/em/runtime/Interpreter.cpp
         src/em/runtime/Interpreter.h
         src/em/values/LiteralValue.h
@@ -57,6 +57,8 @@ add_library(Em
         src/em/EmLang.cpp
         src/em/EmLang.h
         src/em/utils/FileUtils.h
+        src/em/ast/exprs/VirtualSetExpression.cpp
+        src/em/ast/exprs/VirtualSetExpression.h
 )
 
 add_executable(main src/main.cpp)

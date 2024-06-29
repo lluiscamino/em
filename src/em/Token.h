@@ -11,6 +11,7 @@ namespace em {
     LEFT_PAREN,
     RIGHT_PAREN,
     COMMA,
+    VERTICAL_BAR,
 
     ASSIGN,
 
@@ -41,6 +42,8 @@ namespace em {
         return "RIGHT_PAREN";
       case TokenType::COMMA:
         return "COMMA";
+      case TokenType::VERTICAL_BAR:
+        return "VERTICAL_BAR";
       case TokenType::ASSIGN:
         return "ASSIGN";
       case TokenType::NUMBER:

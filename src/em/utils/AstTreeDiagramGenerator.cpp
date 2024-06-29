@@ -8,9 +8,10 @@
 #include "../ast/exprs/FunctionDeclaration.h"
 #include "../ast/exprs/GroupExpression.h"
 #include "../ast/exprs/LiteralExpression.h"
+#include "../ast/exprs/MaterialSetExpression.h"
 #include "../ast/exprs/OperatorExpression.h"
-#include "../ast/exprs/SetExpression.h"
 #include "../ast/exprs/VariableExpression.h"
+#include "../ast/exprs/VirtualSetExpression.h"
 #include "../ast/stmts/ExpressionStatement.h"
 #include "StringUtils.h"
 
@@ -67,12 +68,21 @@ namespace em::utils {
     return nullptr;
   }
 
-  ast::NodeVisitor::VisitorRetValue AstTreeDiagramGenerator::visit(ast::exprs::SetExpression* expr) {
+  ast::NodeVisitor::VisitorRetValue AstTreeDiagramGenerator::visit(ast::exprs::MaterialSetExpression* expr) {
     auto nodeId = createNode("SetExpression");
     for (const auto& value : expr->values()) {
       value->accept(*this);
       linkNodes({nodeId, mLastNodeId});
     }
+    mLastNodeId = nodeId;
+    return nullptr;
+  }
+
+  ast::NodeVisitor::VisitorRetValue AstTreeDiagramGenerator::visit(ast::exprs::VirtualSetExpression* expr) {
+    auto nodeId = createNode("VirtualSetExpression");
+    linkNodes({nodeId, createTokenNode(expr->parameter())}, "parameter");
+    expr->expression()->accept(*this);
+    linkNodes({nodeId, mLastNodeId}, "expr");
     mLastNodeId = nodeId;
     return nullptr;
   }

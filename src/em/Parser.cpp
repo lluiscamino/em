@@ -8,9 +8,10 @@
 #include "ast/exprs/FunctionDeclaration.h"
 #include "ast/exprs/GroupExpression.h"
 #include "ast/exprs/LiteralExpression.h"
+#include "ast/exprs/MaterialSetExpression.h"
 #include "ast/exprs/OperatorExpression.h"
-#include "ast/exprs/SetExpression.h"
 #include "ast/exprs/VariableExpression.h"
+#include "ast/exprs/VirtualSetExpression.h"
 #include "ast/stmts/ExpressionStatement.h"
 #include "values/LiteralValue.h"
 
@@ -80,10 +81,19 @@ namespace em {
       if (!check(TokenType::RIGHT_BRACE)) {
         do {
           exprs.insert(parseExpression());
+          if (match(TokenType::VERTICAL_BAR)) {
+            auto leftExpr = dynamic_cast<ast::exprs::VariableExpression*>((*exprs.begin()).get());
+            if (exprs.size() != 1 || !leftExpr) {
+              throw std::logic_error("Invalid virtual set variable");
+            }
+            auto rightExpr = parseExpression();
+            consume(TokenType::RIGHT_BRACE);
+            return std::make_unique<ast::exprs::VirtualSetExpression>(leftExpr->token(), std::move(rightExpr));
+          }
         } while (match(TokenType::COMMA));
       }
       mPosition++;
-      return std::make_unique<ast::exprs::SetExpression>(std::move(exprs));
+      return std::make_unique<ast::exprs::MaterialSetExpression>(std::move(exprs));
     }
     return parseFunctionDeclaration();
   }

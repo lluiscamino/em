@@ -5,9 +5,9 @@
 #include "Expression.h"
 
 namespace em::ast::exprs {
-  class SetExpression : public Expression {
+  class MaterialSetExpression : public Expression {
    public:
-    explicit SetExpression(std::unordered_set<std::unique_ptr<Expression>> values);
+    explicit MaterialSetExpression(std::unordered_set<std::unique_ptr<Expression>> values);
 
     [[nodiscard]] const std::unordered_set<std::unique_ptr<Expression>>& values() const;
 
@@ -16,6 +16,6 @@ namespace em::ast::exprs {
    private:
     std::unordered_set<std::unique_ptr<Expression>> mValues;
   };
-}  // namespace em::exprs
+}  // namespace em::ast::exprs
 
 // lang

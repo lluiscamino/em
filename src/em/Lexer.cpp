@@ -24,6 +24,9 @@ namespace em {
         case ',':
           tokens.emplace_back(TokenType::COMMA, c);
           break;
+        case '|':
+          tokens.emplace_back(TokenType::VERTICAL_BAR, c);
+          break;
         case ':':
           if (mProgram[++mPosition] == '=') {
             tokens.emplace_back(TokenType::ASSIGN, L":=");
