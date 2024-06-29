@@ -25,8 +25,7 @@ namespace em::runtime {
                      // TODO: Only return true if it's a number
                      return std::make_unique<values::LiteralValue<bool>>(true);
                    }))},
-        {L"∅", std::make_unique<values::sets::VirtualSetValue>(std::make_unique<values::functions::NativeFunction>(
-                   L"∅", [](const auto&) { return std::make_unique<values::LiteralValue<bool>>(false); }))},
+        {L"∅", std::make_unique<values::sets::MaterialSetValue>()},
         {L"print", std::make_unique<values::functions::NativeFunction>(
                        L"print", [this](const std::vector<std::shared_ptr<values::Value>>& args) {
                          *mOutputStream << args[0]->str() << '\n';
