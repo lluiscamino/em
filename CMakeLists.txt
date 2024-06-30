@@ -18,7 +18,7 @@ add_library(Em SHARED ${SOURCES})
 
 # Executable (CLI application)
 add_executable(em src/main.cpp)
-target_link_libraries(em PRIVATE EmberScript)
+target_link_libraries(em PRIVATE Em)
 
 # Testing
 add_subdirectory(test)
