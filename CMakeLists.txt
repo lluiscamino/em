@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 project(em
   VERSION 1.0
-  DESCRIPTION "EmberScript - A small language for mathematical operations"
+  DESCRIPTION "Em - A small language for mathematical operations"
   LANGUAGES CXX
 )
 
@@ -14,7 +14,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Library
 file(GLOB_RECURSE SOURCES "src/*.cpp")
-add_library(EmberScript SHARED ${SOURCES})
+add_library(Em SHARED ${SOURCES})
 
 # Executable (CLI application)
 add_executable(em src/main.cpp)
