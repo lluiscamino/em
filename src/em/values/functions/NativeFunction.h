@@ -1,4 +1,7 @@
 #pragma once
+
+#include <functional>
+
 #include "Function.h"
 
 namespace em::values::functions {
