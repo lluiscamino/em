@@ -1,5 +1,6 @@
 #include "Parser.h"
 
+#include <algorithm>
 #include <unordered_set>
 
 #include "ast/Program.h"

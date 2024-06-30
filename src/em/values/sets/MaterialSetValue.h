@@ -8,11 +8,11 @@
 
 namespace em::values::sets {
   struct ValuePtrHash {
-    constexpr std::size_t operator()(const std::shared_ptr<Value>& value) const { return value->hash(); }
+    std::size_t operator()(const std::shared_ptr<Value>& value) const { return value->hash(); }
   };
 
   struct ValuePtrEq {
-    constexpr bool operator()(const std::shared_ptr<Value>& a, const std::shared_ptr<Value>& b) const {
+    bool operator()(const std::shared_ptr<Value>& a, const std::shared_ptr<Value>& b) const {
       return *a == *b;
     }
   };
