@@ -10,7 +10,6 @@ int main(int argc, char* argv[]) {
     std::cerr << "Please specify program.txt path as the only argument!";
     return EXIT_FAILURE;
   }
-
   try {
     em::EmLang::runProgram(em::utils::file::getFileContents(argv[1]));
   } catch (const std::exception& exception) {
