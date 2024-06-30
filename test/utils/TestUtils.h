@@ -1,6 +1,7 @@
 #pragma once
 
 #include <filesystem>
+#include <functional>
 #include <iostream>
 
 #include "../../src/em/utils/FileUtils.h"
