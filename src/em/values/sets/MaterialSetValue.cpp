@@ -1,5 +1,7 @@
 #include "MaterialSetValue.h"
 
+#include <algorithm>
+#include <functional>
 #include <sstream>
 #include <string>
 

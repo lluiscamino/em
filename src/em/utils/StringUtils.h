@@ -4,6 +4,7 @@
 #include <locale>
 #include <sstream>
 #include <string>
+#include <vector>
 
 namespace em::utils::string {
   template <typename T>
