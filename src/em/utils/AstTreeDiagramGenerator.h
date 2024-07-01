@@ -1,6 +1,7 @@
 #pragma once
 
 #include <sstream>
+#include <vector>
 
 #include "../Token.h"
 #include "../ast/NodeVisitor.h"
