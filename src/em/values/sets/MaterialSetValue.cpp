@@ -20,7 +20,7 @@ bool MaterialSetValue::operator==(const Value& other) {
     return mValues.size() == otherSetValue.mValues.size() &&
            std::all_of(mValues.cbegin(), mValues.cend(),
                        [&otherSetValue](const auto& value) {
-                         return otherSetValue.hasElement(value)->isTruthy();
+                         return otherSetValue.hasElement(value);
                        });
   } catch (const std::bad_cast&) {
     return false;
@@ -33,19 +33,14 @@ void MaterialSetValue::addValue(std::shared_ptr<Value> value) {
   mValues.insert(std::move(value));
 }
 
-std::unique_ptr<Value> MaterialSetValue::isSubsetOf(
-    const std::shared_ptr<Value>& other) const {
-  for (const auto& value : mValues) {
-    if (!other->hasElement(value)->isTruthy()) {
-      return std::make_unique<LiteralValue<bool>>(false);
-    }
-  }
-  return std::make_unique<LiteralValue<bool>>(true);
+bool MaterialSetValue::isSubsetOf(const std::shared_ptr<Set>& other) const {
+  return std::all_of(
+      mValues.cbegin(), mValues.cend(),
+      [&other](const auto& value) { return other->hasElement(value); });
 }
 
-std::unique_ptr<Value> MaterialSetValue::hasElement(
-    const std::shared_ptr<Value>& other) const {
-  return std::make_unique<LiteralValue<bool>>(mValues.count(other));
+bool MaterialSetValue::hasElement(const std::shared_ptr<Value>& other) const {
+  return mValues.count(other);
 }
 
 std::string MaterialSetValue::str() const {

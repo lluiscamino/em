@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <vector>
 
 #include "Node.h"
@@ -7,16 +8,17 @@
 
 namespace em::ast {
 
-  class Program : public Node {
-   public:
-    explicit Program(std::vector<std::unique_ptr<stmts::Statement>> statements);
+class Program : public Node {
+ public:
+  explicit Program(std::vector<std::unique_ptr<stmts::Statement>> statements);
 
-    [[nodiscard]] const std::vector<std::unique_ptr<stmts::Statement>>& statements() const;
+  [[nodiscard]] const std::vector<std::unique_ptr<stmts::Statement>>&
+  statements() const;
 
-    void accept(NodeVisitor& visitor);
+  void accept(NodeVisitor& visitor);
 
-   private:
-    std::vector<std::unique_ptr<stmts::Statement>> mStatements;
-  };
+ private:
+  std::vector<std::unique_ptr<stmts::Statement>> mStatements;
+};
 
 }  // namespace em::ast

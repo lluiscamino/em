@@ -11,6 +11,7 @@
 #include "../ast/exprs/VirtualSetExpression.h"
 #include "../ast/stmts/ExpressionStatement.h"
 #include "../utils/StringUtils.h"
+#include "../utils/ValueUtils.h"
 #include "../values/LiteralValue.h"
 #include "../values/functions/NativeFunction.h"
 #include "../values/functions/ProgramFunction.h"
@@ -75,25 +76,36 @@ ast::NodeVisitor::VisitorRetValue Interpreter::visit(
 
 Interpreter::VisitorRetValue Interpreter::visit(
     ast::exprs::OperatorExpression* expr) {
+  using namespace utils::values;
   auto leftValue = expr->leftExpression()->accept(*this);
   auto rightValue = expr->rightExpression()->accept(*this);
   // todo: study type checking here: require(Set)
   const auto& token = expr->operation();
   switch (token.type()) {
     case TokenType::EQUAL:
-      return leftValue->isEqualTo(rightValue);
+      return toValue(*leftValue == *rightValue);
     case TokenType::NOT_EQUAL:
-      return leftValue->isDifferentTo(rightValue);
-    case TokenType::ELEMENT_OF:
-      return leftValue->isElementOf(rightValue);
+      return toValue(*leftValue != *rightValue);
+    case TokenType::ELEMENT_OF: {
+      const auto& rightSet = requireType<values::sets::Set>(rightValue, token);
+      return toValue(rightSet->hasElement(leftValue));
+    }
     case TokenType::UNION:
-      return leftValue->unionOp(rightValue);
+      return requireType<values::sets::Set>(leftValue, token)
+          ->unionOp(requireType<values::sets::Set>(rightValue, token));
     case TokenType::INTERSECTION:
-      return leftValue->intersection(rightValue);
-    case TokenType::SUBSET:
-      return leftValue->isSubsetOf(rightValue);
-    case TokenType::NOT_SUBSET:
-      return leftValue->isNotSubsetOf(rightValue);
+      return requireType<values::sets::Set>(leftValue, token)
+          ->intersection(requireType<values::sets::Set>(rightValue, token));
+    case TokenType::SUBSET: {
+      const auto& leftSet = requireType<values::sets::Set>(leftValue, token);
+      const auto& rightSet = requireType<values::sets::Set>(rightValue, token);
+      return toValue(leftSet->isSubsetOf(rightSet));
+    }
+    case TokenType::NOT_SUBSET: {
+      const auto& leftSet = requireType<values::sets::Set>(leftValue, token);
+      const auto& rightSet = requireType<values::sets::Set>(rightValue, token);
+      return toValue(!leftSet->isSubsetOf(rightSet));
+    }
     default:
       throw std::logic_error("Operation " + TokenTypeToString(token.type()) +
                              " is not supported for a operator expression at " +

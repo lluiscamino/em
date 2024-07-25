@@ -1,19 +1,26 @@
 #pragma once
+
+#include <memory>
+
 #include "../Value.h"
 
 namespace em::values::sets {
 
-  class Set : public Value {
-   public:
-    bool operator!=(const Value& other) override;
+class Set : public Value, public std::enable_shared_from_this<Set> {
+ public:
+  bool operator!=(const Value& other) override;
 
-    explicit operator bool() const override;
+  [[nodiscard]] virtual bool isSubsetOf(
+      const std::shared_ptr<Set>& other) const = 0;
 
-    [[nodiscard]] std::unique_ptr<Value> negation() const override;
+  [[nodiscard]] virtual bool hasElement(
+      const std::shared_ptr<Value>& other) const = 0;
 
-    [[nodiscard]] std::unique_ptr<Value> unionOp(const std::shared_ptr<Value>& other) const override;
+  [[nodiscard]] std::unique_ptr<Set> unionOp(
+      const std::shared_ptr<Set>& other) const;
 
-    [[nodiscard]] std::unique_ptr<Value> intersection(const std::shared_ptr<Value>& other) const override;
-  };
+  [[nodiscard]] std::unique_ptr<Set> intersection(
+      const std::shared_ptr<Set>& other) const;
+};
 
 }  // namespace em::values::sets
